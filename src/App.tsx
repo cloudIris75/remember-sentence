@@ -1,15 +1,29 @@
-import { DarkMode } from '@mui/icons-material';
 import {
   AppBar,
   Box,
-  Button,
   Container,
   Stack,
   Toolbar,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
+import { handleGoogleLogin, handleLogout } from './services/auth';
+import DefaultButton from './components/DefaultButton';
+import TagButton from './components/TagButton';
 
 function App() {
+  const [isLogin, setIsLogin] = useState(true);
+
+  const login = () => {
+    handleGoogleLogin();
+    setIsLogin(true);
+  };
+
+  const logout = () => {
+    handleLogout();
+    setIsLogin(false);
+  };
+
   return (
     <Container
       maxWidth={false}
@@ -20,7 +34,7 @@ function App() {
       }}
     >
       <Container
-        maxWidth="lg"
+        maxWidth="md"
         sx={{
           width: '1',
           height: '1',
@@ -42,63 +56,81 @@ function App() {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'end',
               }}
             >
-              <Button sx={{ color: 'primary.contrastText' }}>
-                <DarkMode />
-              </Button>
               <Stack direction="row" spacing={2}>
-                <Button variant="contained" sx={{ color: 'primary.dark' }}>
-                  글쓰기
-                </Button>
-                <Button variant="contained" sx={{ color: 'primary.dark' }}>
-                  로그아웃
-                </Button>
+                {isLogin && <DefaultButton name="글쓰기" />}
+                <DefaultButton
+                  onclick={isLogin ? logout : login}
+                  name={isLogin ? '로그아웃' : '로그인'}
+                />
               </Stack>
             </Box>
           </Toolbar>
         </AppBar>
         <Typography
-          variant="h6"
-          gutterBottom
+          variant="h5"
           sx={{
-            paddingY: 2,
+            paddingTop: 2,
+            paddingBottom: 4,
             textAlign: 'center',
             color: 'primary.contrastText',
           }}
         >
           이 문장, 내가 기억할게!
         </Typography>
-        <Box sx={{ paddingBottom: 4 }}>
-          <Button
-            variant="contained"
+        <Container>
+          <Box
             sx={{
-              backgroundColor: 'primary.contrastText',
-              color: 'primary.dark',
+              paddingBottom: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'start',
             }}
           >
-            한국어
-          </Button>
-        </Box>
-        <Container
-          sx={{
-            width: '90%',
-            paddingX: 4,
-            paddingY: 2,
-            backgroundColor: 'primary.contrastText',
-          }}
-        >
-          <Typography
-            variant="subtitle1"
-            gutterBottom
-            sx={{ color: 'primary.dark' }}
+            <Box
+              sx={{
+                paddingBottom: 2,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <TagButton name="한국어" color="#959EA2" />
+              <TagButton name="영어" color="#002664" />
+              <TagButton name="일본어" color="#bc002d" />
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <TagButton name="가사" color="#694ED1" />
+              <TagButton name="명언" color="#2EB7CE" />
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              paddingX: 4,
+              paddingY: 2,
+              backgroundColor: 'primary.contrastText',
+            }}
           >
-            한국어 명언
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: 'primary.light' }}>
-            - 명언 남긴 사람 -
-          </Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: 'primary.dark' }}
+            >
+              한국어 명언
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: 'primary.light' }}>
+              - 명언 남긴 사람 -
+            </Typography>
+          </Box>
         </Container>
       </Container>
     </Container>
