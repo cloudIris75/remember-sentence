@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles/global.css';
-import reportWebVitals from './reportWebVitals';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from './styles/theme';
 
@@ -22,5 +21,3 @@ function MyApp() {
 }
 
 root.render(<MyApp />);
-
-reportWebVitals();
