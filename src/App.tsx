@@ -14,9 +14,12 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from './redux/store';
+import { login, logout } from './redux/slices/usersSlice';
 
 const languages = [
   { value: 'Korean', label: '한국어' },
@@ -34,20 +37,37 @@ const categories = [
 ];
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.users);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        const userData = await user.getIdTokenResult();
+        const { user_id, name } = userData.claims;
+        dispatch(
+          login({
+            isLoggedIn: true,
+            token,
+            userId: user_id,
+            username: name,
+          })
+        );
+      } else {
+        dispatch(logout());
+      }
+    });
+  }, []);
 
   const handleGoogleLogin = () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).then(() => {
-      setIsLogin(true);
-    });
+    signInWithPopup(auth, provider);
   };
 
   const handleLogout = () => {
-    auth.signOut().then(() => {
-      setIsLogin(false);
-    });
+    auth.signOut();
   };
 
   const handleClickOpen = () => {
@@ -85,16 +105,16 @@ function App() {
           }}
         >
           <Stack direction="row" spacing={2}>
-            {isLogin && (
+            {user.isLoggedIn && (
               <Button onClick={handleClickOpen} variant="outlined">
                 글쓰기
               </Button>
             )}
             <Button
-              onClick={isLogin ? handleLogout : handleGoogleLogin}
+              onClick={user.isLoggedIn ? handleLogout : handleGoogleLogin}
               variant="outlined"
             >
-              {isLogin ? '로그아웃' : '로그인'}
+              {user.isLoggedIn ? '로그아웃' : '로그인'}
             </Button>
           </Stack>
         </Toolbar>
